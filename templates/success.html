@@ -9,10 +9,14 @@
 
 	<body>
 		<div class="span1"></div>
-		<div class="well well-large">
-			<h1>Thanks for sharing!</h1>
-			<h2>Mmmm...can't wait to try {{ title }}.</h2>
-			<a href="/" class="btn btn-primary">Home</a>
+		<div class="well well-large" style="padding-bottom:100px">
+			<div style="margin-left:10%">
+				<h1>Thanks for sharing, {{sandwich.author}}!</h1>
+				<h2>Mmmm...can't wait to try {{ sandwich.title }}.</h2>
+				<div class="span1 offset10">
+					<a href="/" class="btn btn-primary">Home</a>
+				</div>
+			</div>
 		</div>
 	</body>
 

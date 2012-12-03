@@ -1,13 +1,15 @@
-# # -*- coding: utf-8 -*-
-# from mongoengine import *
-
-# from flask.ext.mongoengine.wtf import model_form
-# from datetime import datetime
+# -*- coding: utf-8 -*-
+from flask.ext.mongoengine.wtf import model_form
+from wtforms.fields import * # for our custom signup form
+from flask.ext.mongoengine.wtf.orm import validators
+from mongoengine import *
+from flask.ext.mongoengine import mongoengine
+from datetime import datetime
 
 
 # # PROFILE OBJECT 
 
-# class Profile(Document):
+# class Profile(mongoengine.Document):
 # 	name = StringField()
 # 	nickname = StringField()
 # 	pic = URLField()
@@ -19,31 +21,23 @@
 # ProfileForm = model_form(Profile)
 
 	  
-# # SANDWICH OBJECT 
+# SANDWICH OBJECT 
 
-# class Sandwich(EmbeddedDocument):
-# 	title = StringField()
-# 	author = StringField()
-# 	descrip = StringField()
-# 	bread_brand = StringField()
-# 	bread_type = StringField()
-# 	butter_brand = StringField() 
-# 	butter_type = StringField()
-# 	qty1 = StringField()
-# 	ingred1 = StringField()
-# 	qty2 = StringField()
-# 	ingred2 = StringField()
-# 	instructions = StringField()
-# 	rating = DecimalField()
-# 	likes = IntField()
-# 	pic = URLField()	
+class Sandwich(mongoengine.Document):
+	title = mongoengine.StringField()
+	author = mongoengine.StringField()
+	descrip = mongoengine.StringField()
+	bread_type = mongoengine.StringField()
+	butter_type = mongoengine.StringField()
+	instructions = mongoengine.StringField()
+	files = mongoengine.ListField( StringField() )
 
-# SandwichForm = model_form(Sandwich)	
+SandwichForm = model_form(Sandwich)	
 
 
 # # REVIEW OBJECT 
 
-# class Review (Document):
+# class Review (mongoengine.Document):
 # 	# author = EmbeddedDocumentField()
 # 	rating = IntField()
 # 	text = StringField()
@@ -53,9 +47,11 @@
 
 # # PRODUCT OBJECT  
 	
-# class Product(Document):
-# 	shelf = StringField() # bread, butter, something
-# 	name = StringField()  # white, wheat ---- almond, cashew
-# 	brand = StringField()
+class Product(mongoengine.Document):
+	shelf = mongoengine.StringField() # bread, butter, something
+	name = mongoengine.StringField()  # white, wheat ---- almond, cashew
+	brand = mongoengine.StringField()
 
 # ProductForm = model_form(Product)
+
+

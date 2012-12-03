@@ -3,3 +3,4 @@ Mongoengine==0.7.5
 unidecode
 Flask-mongoengine
 Flask-WTF==0.6
+boto

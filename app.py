@@ -7,16 +7,24 @@ from unidecode import unidecode
 from flask import Flask, request, render_template, redirect, abort
 from mongoengine import *
 from flask.ext.mongoengine import mongoengine
+from werkzeug import secure_filename
 
-mongoengine.connect('mydata', host=os.environ.get('MONGOLAB_URI'))
 
-# ------------------------------------------------------------- DATA 
+import boto # Amazon AWS library
+import StringIO # Python Image Library
 
-# data_setup.get_data()
+
+
 
 # -------------------------------------------------------------- "/"
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY') # put SECRET_KEY variable inside .env file with a random string of alphanumeric characters
+app.config['CSRF_ENABLED'] = False
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16 megabyte file upload
+
+mongoengine.connect('mydata', host=os.environ.get('MONGOLAB_URI'))
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 @app.route("/")
 def mainpage():
@@ -32,7 +40,78 @@ def mainpage():
 
 
 # ----------------------------------------------------------------- /SHARE 
+@app.route("/share", methods=['GET', 'POST'])
+def share():
+    
+    sandwich_form = models.SandwichForm(request.form)
+    
+    if request.method == "POST" and sandwich_form.validate():
+        
+        uploaded_file = request.files['fileupload']
+        # app.logger.info(file)
+        # app.logger.info(file.mimetype)
+        # app.logger.info(dir(file))
+        
+        # Uploading is fun
+        # 1 - Generate a file name with the datetime prefixing filename
+        # 2 - Connect to s3
+        # 3 - Get the s3 bucket, put the file
+        # 4 - After saving to s3, save data to database
 
+        if uploaded_file and allowed_file(uploaded_file.filename):
+            # create filename, prefixed with datetime
+            now = datetime.datetime.now()
+            filename = now.strftime('%Y%m%d%H%M%s') + "-" + secure_filename(uploaded_file.filename)
+            # thumb_filename = now.strftime('%Y%m%d%H%M%s') + "-" + secure_filename(uploaded_file.filename)
+
+            # connect to s3
+            s3conn = boto.connect_s3(os.environ.get('AWS_ACCESS_KEY_ID'),os.environ.get('AWS_SECRET_ACCESS_KEY'))
+
+            # open s3 bucket, create new Key/file
+            # set the mimetype, content and access control
+            b = s3conn.get_bucket(os.environ.get('AWS_BUCKET')) # bucket name defined in .env
+            k = b.new_key(b)
+            k.key = filename
+            k.set_metadata("Content-Type", uploaded_file.mimetype)
+            k.set_contents_from_string(uploaded_file.stream.read())
+            k.make_public()
+
+            # save information to MONGO database
+            # did something actually save to S3
+            templateData = {}
+            if k and k.size > 0:
+                
+                sandwich = models.Sandwich()
+                sandwich.title = request.form.get('title', 'untitled sandwich' )
+                sandwich.author = request.form.get('author', 'mystery maker')
+                sandwich.descrip = request.form.get('descrip', 'it is what it is')
+                sandwich.bread_type = request.form.get('bread_type')
+                sandwich.butter_type = request.form.get('butter_type')
+                sandwich.instructions = request.form.get('instructions')
+                sandwich.files.append(filename)
+                sandwich.save()
+
+                templateData = {
+                    'sandwich' : sandwich
+                }
+
+            return render_template( 'success.html', **templateData )
+    
+    else:
+
+        allBreads = models.Product.objects(shelf="bread")
+        allButters = models.Product.objects(shelf="butter")
+    
+        templateData = {
+            'breads' : allBreads,
+            'butters' : allButters,
+            'form' : sandwich_form
+        }
+
+    return render_template( 'share.html', **templateData )
+
+
+# ------------------------------------------------------------------------- DATA
 @app.route("/automateproducts")
 def test():
 
@@ -49,66 +128,17 @@ def test():
         tmpButter = models.Product(shelf="butter",name=b)
         tmpButter.save()
 
-
     return "ok"
 
-@app.route("/share")
-def share():
-    all_data = {
-        'Addons' : data_setup.all_addons_categories,
-        'Breads' : data_setup.all_bread_brands,
-        'Butters' : data_setup.all_nuts,
-        'dbBreads' : models.Product.objects(shelf='bread').order_by('name'),
-        'dbButters' : models.Product.objects(shelf='butter').order_by('name'),
-        'title' : "share"
-    }
 
-    app.logger.debug(all_data.get('dbBreads'))
+# ------------------------------------------------------------------------ ERRORS
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
 
-    
-    return render_template('share.html', **all_data)
-
-
-# ------------------------------------------------------------------- /SAVE
-@app.route("/save", methods=['GET','POST'])
-def save():
-    sandwich_form = models.SandwichForm(request.form)
-
-    if request.method == "POST" :
-        new = models.Sandwich()
-        new.title = request.form.get('title', 'that \'which')
-        new.author = request.form.get('author', 'anonymous')
-        new.descip = request.form.get('descrip', 'it is what it is')
-        new.bread_brand = request.form.get('bread_brand', 'none')
-        new.bread_type = request.form.get('bread_type', 'none')
-        new.butter_brand = request.form.get('butter_brand', 'none')
-        new.butter_type = request.form.get('butter_type', 'none')
-        new.qty1 = request.form.get('qty1', None)
-        new.ingred1 = request.form.get('ingred1', None)
-        new.qty2 = request.form.get('qty2', None)
-        new.ingred2 = request.form.get('ingred2', None)
-        new.instructions = request.form.get('instructions', 'figure it out yourself')
-        new.save()
-
-    return render_template("/success/%s"  % new.title)
-
-# ------------------------------------------------------------------ /SUCCESS
-
-@app.route("/success/<title_string>", methods=['GET', 'POST'])
-def success():
-    try:
-        title = title_string
-    except:
-        abort(404)
-
-    # prepare template data
-    templateData = {
-        'title' : title_slug
-    }
-
-    return render_template('success.html', **templateData)
-
-
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.lower().rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
 # ------------------------------------------------------------------ SERVER STARTUP
