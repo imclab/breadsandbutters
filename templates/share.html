@@ -1,0 +1,84 @@
+{% extends 'layout.html' %}
+
+{% block js %}
+{% endblock %}
+
+{% block body %}
+	<!--TITLE-->
+	<div class="well well-large" id="share-well">	
+		<h2>Share a Sandwich</h2>  
+    </div>
+
+	<!--PHOTO FRAME-->
+	<div class="span1"></div>
+	<div class="span4 thumbnail">
+		<img src="/static/img/photo_placeholder.png"/>
+	</div>
+
+	<!--MAIN INFO-->
+	<div class="span6">
+		<form method="POST" action="/save">
+			<label for="title" id="title_label">Name your creation:</label>
+			<input type="text" id="title" name="title" autofocus="autofocus" size="70">
+
+			<label for="author">Your Name</label>
+			<input type="text" id="author" name="name" size="60">
+					
+<!-- 			<label for="nickname">Nickname</label>
+			<input type="text" id="nickname" name="nickname" size="60">
+			</br> -->
+
+			<label for="descrip">Description</label>
+			<textarea cols="72" rows="8" id="descrip" name="descrip"></textarea>
+
+			<!--BREAD-->
+			<fieldset><legend>Bread</legend>
+
+				<select name="bread_brand" value="Brand">
+					<option>brand...</option>
+					{% for key, value in Breads.iteritems() %}
+						<option>{{ key }}</option>
+					{% endfor %}
+				</select>
+				<select name="bread_type">
+					<option>type...</option>
+				</select>
+			</fieldset>
+
+			<!--BUTTER-->
+			<fieldset><legend>Butter</legend>
+
+				<select name="butter_brand">
+					<option>brand...</option>
+					<option>Barney</option>
+					<option>Woodstock Farms</option>
+					<option>Jif</option>
+					<option>Skippy</option>	
+				</select>
+
+				<select name="butter_type">
+					<option>type...</option>
+				</select>
+			</fieldset>
+
+			<!--OTHER INGREDIENTS-->
+			<fieldset><legend>Other Ingredients</legend>
+				<input type="text" id="qty1" name="qty1" value="qty" size="5"><span>
+				<input type="text" id="ingred1" name="ingred1" value="ingredient" size="25"></span></br>
+				<input type="text" id="qty2" name="qty2" value="qty" size="5"><span>
+				<input type="text" id="ingred2" name="ingred2" value="ingredient" size="25"></span>
+				<!-- <i class="icon-plus-sign"></i> -->
+			</span>
+			</fieldset>
+
+			<!--INSTRUCTIONS-->
+			<label for="description">Instructions</label>
+			<textarea cols="100" rows="8" id="instructions" name="instructions"></textarea>
+					
+			<!--SUBMIT BUTTON-->
+			<label>
+				<button type="submit" class="btn btn-large btn-success" value="Submit">Share</button>
+			</label>
+		</form>
+	</div>
+{% endblock %}
