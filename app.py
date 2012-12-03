@@ -12,7 +12,7 @@ mongoengine.connect('mydata', host=os.environ.get('MONGOLAB_URI'))
 
 # ------------------------------------------------------------- DATA 
 
-data_setup.get_data()
+# data_setup.get_data()
 
 # -------------------------------------------------------------- "/"
 
