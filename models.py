@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
-from mongoengine import *
+# # -*- coding: utf-8 -*-
+# from mongoengine import *
 
-from flask.ext.mongoengine.wtf import model_form
-from datetime import datetime
+# from flask.ext.mongoengine.wtf import model_form
+# from datetime import datetime
 
 
-# PROFILE OBJECT 
+# # PROFILE OBJECT 
 
 # class Profile(Document):
 # 	name = StringField()
@@ -16,42 +16,46 @@ from datetime import datetime
 # 	reviews = ListField( EmbeddedDocumentField() )
 # 	likes = IntField()
 
+# ProfileForm = model_form(Profile)
+
 	  
-# SANDWICH OBJECT 
+# # SANDWICH OBJECT 
 
-class Sandwich(EmbeddedDocument):
-	title = StringField()
-	author = StringField()
-	# author_prof = EmbeddedDocumentField()
-	descrip = StringField()
-	bread_brand = StringField()
-	bread_type = StringField()
-	butter_brand = StringField() 
-	butter_type = StringField()
-	qty1 = StringField()
-	ingred1 = StringField()
-	qty2 = StringField()
-	ingred2 = StringField()
-	instructions = StringField()
-	# rating = DecimalField()
-	# likes = IntField()
-	# pic = URLField()	
+# class Sandwich(EmbeddedDocument):
+# 	title = StringField()
+# 	author = StringField()
+# 	descrip = StringField()
+# 	bread_brand = StringField()
+# 	bread_type = StringField()
+# 	butter_brand = StringField() 
+# 	butter_type = StringField()
+# 	qty1 = StringField()
+# 	ingred1 = StringField()
+# 	qty2 = StringField()
+# 	ingred2 = StringField()
+# 	instructions = StringField()
+# 	rating = DecimalField()
+# 	likes = IntField()
+# 	pic = URLField()	
 
-SandwichForm = model_form(Sandwich)	
+# SandwichForm = model_form(Sandwich)	
 
 
-# REVIEW OBJECT 
-# class Review (object):
+# # REVIEW OBJECT 
+
+# class Review (Document):
 # 	# author = EmbeddedDocumentField()
 # 	rating = IntField()
 # 	text = StringField()
 
+# ReviewForm = model_form(Review)
 
-# BREAD OBJECT  
+
+# # PRODUCT OBJECT  
 	
-class Product(Document):
-	shelf = StringField() # bread, butter, something
-	name = StringField()  # white, wheat ---- almond, cashew
-	brand = StringField()
+# class Product(Document):
+# 	shelf = StringField() # bread, butter, something
+# 	name = StringField()  # white, wheat ---- almond, cashew
+# 	brand = StringField()
 
-
+# ProductForm = model_form(Product)

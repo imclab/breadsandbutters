@@ -5,6 +5,7 @@ import data_setup
 
 from unidecode import unidecode
 from flask import Flask, request, render_template, redirect, abort
+from mongoengine import *
 from flask.ext.mongoengine import mongoengine
 
 mongoengine.connect('mydata', host=os.environ.get('MONGOLAB_URI'))
