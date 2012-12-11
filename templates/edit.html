@@ -1,44 +1,61 @@
 {% extends 'main.html' %}
 
 {% block styles %}
+<style type="text/css">
+input {
+	text-align:left;
+}
+
+</style>
 {% endblock %}
 
 {% block body %}
 	<!--TITLE-->
 	<div class="well well-large" id="share-well">	
-		<h2 style="margin-left:8%">Share a Sandwich</h2>  
+		<h2 style="margin-left:8%">Edit Your Sandwich</h2>  
     </div>
 
 	<!--MAIN INFO-->
 	<div class="row-fluid">
 	<div class="span10 offset1">
-		<form method="POST" action="/share" enctype="multipart/form-data">
+		<form method="POST" action="/edit/{{ sandwich.slug }}" enctype="multipart/form-data">
 			
+			<!-- PHOTOS -->
 			<div class="span4 offset1">
-				<img src="/static/img/photo_placeholder.png"/>
-				</br>
-				</br>
 				<label for="uploadfield" id="upload_label">Add an image:</label>
 				<input type="file" id="fileupload" name="fileupload">
+				{% for f in sandwich.files %}
+					<img src="https://s3.amazonaws.com/breadsandbutters/{{f}}">
+				{% endfor %}
+				</br>
+				</br>
 			</div>
 
+			<!-- TITLE -->
 			<div class="span5">
-				<label for="title" id="title_label">Name your creation:</label>
-				<input type="text" id="title" name="title" autofocus="autofocus" size="70">
-				
-				<!-- temporary, will  not need when users are logged in -->
+				<label for="title" id="title_label">Title:</label>
+				<input type="text" id="title" name="title" autofocus="autofocus" size="70"
+					value="{{ sandwich.title }}">
+				</br>
+				</br>
+			
+				<!-- USER -->
+				<!-- 
 				<label for="author">Your Name</label>
-				<input type="text" id="author" name="author" size="60">
+				<input type="text" id="author" name="author" size="60"> 
+				-->
 	
+				<!-- DESCRIPTION -->
 				<label for="descrip">Description</label>
-				<textarea cols="62" rows="8" id="descrip" name="descrip"></textarea>
+				<textarea cols="62" rows="8" id="descrip" name="descrip">{{ sandwich.descrip }}</textarea>
 				</br>
 				</br>
 
 				<!--BREAD-->
 				<label for="bread_type">Bread</label>
+					<p> {{ sandwich.bread_type }} </p>
 					<select name="bread_type" id="bread_type">
-						<option>type...</option>
+						<option>change...</option>
 						{% for p in products %}
 						{% if p.shelf == "bread" %}
 							<option>{{ p.name }}</option>
@@ -50,8 +67,9 @@
 
 				<!--BUTTER-->
 				<label for="butter_type">Butter</label>
+					<p> {{ sandwich.butter_type }} </p>
 					<select name="butter_type" id="butter_type">
-						<option>type...</option>
+						<option>change...</option>
 							{% for p in products %}
 							{% if p.shelf == "butter" %}
 								<option>{{ p.name }}</option>
@@ -63,17 +81,17 @@
 
 				<!--ADDITIONS-->
 				<label for="additions">Additional Ingredients</label>
-				<textarea cols="62" rows="2" id="additions" name="additions">bananas, nutella, etc...</textarea>
+				<textarea cols="62" rows="2" id="additions" name="additions">{{ sandwich.additions }}</textarea>
 					</br>
 					</br>
 
 				<!--INSTRUCTIONS-->
 				<label for="description">Instructions</label>
-				<textarea cols="62" rows="10" id="instructions" name="instructions"></textarea>
+				<textarea cols="62" rows="10" id="instructions" name="instructions">{{ sandwich.instructions }}</textarea>
 						
 				<!--SUBMIT BUTTON-->
 				<label>
-					<button type="submit" class="btn btn-large btn-success" value="upload">Share</button>
+					<button type="submit" class="btn btn-large btn-success" value="upload">Save</button>
 				</label>
 			</div>
 		</form>

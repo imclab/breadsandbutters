@@ -4,3 +4,5 @@ unidecode
 Flask-mongoengine
 Flask-WTF==0.6
 boto
+Flask-Bcrypt==0.5.2
+Flask-Login==0.1.2
